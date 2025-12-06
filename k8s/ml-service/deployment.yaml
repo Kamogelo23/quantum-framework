@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quantum-ml-service
+  namespace: quantum
+  labels:
+    app: quantum-ml-service
+    component: ml
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quantum-ml-service
+  template:
+    metadata:
+      labels:
+        app: quantum-ml-service
+        component: ml
+    spec:
+      containers:
+      - name: ml-service
+        image: harbor.yourdomain.com/quantum/ml-service:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8001
+          name: http
+          protocol: TCP
+        volumeMounts:
+        - name: models
+          mountPath: /app/models
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 60
+          periodSeconds: 15
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 45
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+      volumes:
+      - name: models
+        persistentVolumeClaim:
+          claimName: quantum-ml-models-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quantum-ml-service
+  namespace: quantum
+  labels:
+    app: quantum-ml-service
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8001
+    targetPort: 8001
+    protocol: TCP
+    name: http
+  selector:
+    app: quantum-ml-service
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: quantum-ml-models-pvc
+  namespace: quantum
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: standard

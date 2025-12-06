@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: quantum-config
+  namespace: quantum
+data:
+  redis-url: "redis://quantum-redis:6379/0"
+  ml-service-url: "http://quantum-ml-service:8001"
+  keycloak-url: "http://quantum-keycloak:8080"
+  cors-origins: '["https://quantum.yourdomain.com"]'
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: quantum-secrets
+  namespace: quantum
+type: Opaque
+stringData:
+  database-url: "postgresql://quantum:CHANGE_ME@quantum-postgres:5432/quantum"
+  keycloak-client-secret: "CHANGE_ME"
+  secret-key: "CHANGE_ME_GENERATE_RANDOM_SECRET"

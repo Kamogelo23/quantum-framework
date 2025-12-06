@@ -1,0 +1,97 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+
+# Angular
+/dist
+/tmp
+/out-tsc
+/bazel-out
+.angular/
+*.ngfactory.ts
+*.ngstyle.ts
+*.ngsummary.json
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+coverage/
+
+# ML Models
+*.h5
+*.pkl
+*.joblib
+*.pb
+*.ckpt
+models/*.h5
+models/*.pkl
+models/*.joblib
+
+# Kubernetes secrets (DO NOT COMMIT)
+*-secrets.yaml
+*.key
+*.pem
+*.crt
+
+# Docker
+*.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# Logs
+logs/
+*.log

@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quantum-backend
+  namespace: quantum
+  labels:
+    app: quantum-backend
+    component: api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: quantum-backend
+  template:
+    metadata:
+      labels:
+        app: quantum-backend
+        component: api
+    spec:
+      containers:
+      - name: backend
+        image: harbor.yourdomain.com/quantum/backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: quantum-secrets
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: quantum-config
+              key: redis-url
+        - name: ML_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: quantum-config
+              key: ml-service-url
+        - name: KEYCLOAK_SERVER_URL
+          valueFrom:
+            configMapKeyRef:
+              name: quantum-config
+              key: keycloak-url
+        - name: KEYCLOAK_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: quantum-secrets
+              key: keycloak-client-secret
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 20
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quantum-backend
+  namespace: quantum
+  labels:
+    app: quantum-backend
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8000
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  selector:
+    app: quantum-backend

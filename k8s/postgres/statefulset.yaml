@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: quantum-postgres
+  namespace: quantum
+spec:
+  serviceName: quantum-postgres
+ replicas: 1
+  selector:
+    matchLabels:
+      app: quantum-postgres
+  template:
+    metadata:
+      labels:
+        app: quantum-postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16-alpine
+        ports:
+        - containerPort: 5432
+          name: postgres
+        env:
+        - name: POSTGRES_DB
+          value: quantum
+        - name: POSTGRES_USER
+          value: quantum
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: quantum-secrets
+              key: postgres-password
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - quantum
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - quantum
+          initialDelaySeconds: 20
+          periodSeconds: 5
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: standard
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quantum-postgres
+  namespace: quantum
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+  selector:
+    app: quantum-postgres
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: quantum-secrets
+  namespace: quantum
+type: Opaque
+stringData:
+  postgres-password: "CHANGE_ME"

@@ -1,0 +1,5 @@
+# Trained ML models will be stored here
+*.joblib
+*.pkl
+*.h5
+*.pb
