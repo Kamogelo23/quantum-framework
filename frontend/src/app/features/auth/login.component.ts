@@ -3,174 +3,320 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
-    selector: 'app-login',
-    standalone: true,
-    imports: [CommonModule],
-    template: `
+  selector: 'app-login',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
     <div class="login-container">
       <div class="login-card">
-        <div class="logo-section">
-          <div class="logo">Q</div>
-          <h1>Quantum</h1>
-          <p class="tagline">AI-Powered Monitoring Platform</p>
+        <!-- Left Side: Brand -->
+        <div class="brand-section">
+          <div class="brand-content">
+            <div class="logo-wrapper">
+              <div class="logo">Q</div>
+            </div>
+            <h1>Quantum</h1>
+            <p class="tagline">The Intelligence Behind Your Infrastructure</p>
+            
+            <div class="features">
+              <div class="feature">
+                <div class="feature-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+                <span>Enterprise Security</span>
+              </div>
+              <div class="feature">
+                <div class="feature-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <span>Real-time Analytics</span>
+              </div>
+              <div class="feature">
+                <div class="feature-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <span>AI-Powered Insights</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="brand-footer">
+            <p>&copy; 2025 Quantum Systems</p>
+          </div>
         </div>
         
-        <div class="login-content">
-          <h2>Welcome Back</h2>
-          <p class="subtitle">Sign in to access your dashboard</p>
-          
-          <button class="login-button" (click)="login()">
-            <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-            </svg>
-            Sign in with Keycloak
-          </button>
-          
-          <div class="features">
-            <div class="feature">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-              <span>Secure Authentication</span>
+        <!-- Right Side: Login -->
+        <div class="form-section">
+          <div class="form-wrapper">
+            <div class="form-header">
+              <h2>Welcome Back</h2>
+              <p>Please sign in to access your dashboard</p>
             </div>
-            <div class="feature">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              <span>Real-time Monitoring</span>
-            </div>
-            <div class="feature">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-              <span>AI-Powered Insights</span>
+            
+            <button class="login-button" (click)="login()">
+              <div class="button-content">
+                <svg class="keycloak-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                </svg>
+                <span>Sign in with Keycloak</span>
+              </div>
+            </button>
+            
+            <div class="help-link">
+              <a href="#">Having trouble signing in?</a>
             </div>
           </div>
         </div>
       </div>
     </div>
   `,
-    styles: [`
+  styles: [`
+    :host {
+      display: block;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
     .login-container {
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background-color: #f3f4f6;
       padding: 2rem;
     }
 
     .login-card {
-      background: white;
-      border-radius: 24px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      max-width: 450px;
+      display: flex;
       width: 100%;
+      max-width: 960px;
+      min-height: 600px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    /* Left Side: Brand */
+    .brand-section {
+      flex: 1;
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      padding: 3rem;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
       overflow: hidden;
     }
 
-    .logo-section {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 3rem 2rem;
-      text-align: center;
-      color: white;
+    .brand-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=');
+      opacity: 0.3;
+    }
+
+    .brand-content {
+      position: relative;
+      z-index: 10;
+    }
+
+    .logo-wrapper {
+      margin-bottom: 2rem;
     }
 
     .logo {
-      width: 80px;
-      height: 80px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 20px;
+      width: 64px;
+      height: 64px;
+      background: white;
+      color: #4f46e5;
+      font-size: 2rem;
+      font-weight: 800;
+      border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.5rem;
-      font-weight: bold;
-      margin: 0 auto 1rem;
-      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
 
     h1 {
-      margin: 0;
-      font-size: 2rem;
+      font-size: 2.5rem;
       font-weight: 700;
+      margin: 0 0 0.5rem;
+      letter-spacing: -0.025em;
     }
 
     .tagline {
-      margin: 0.5rem 0 0;
+      font-size: 1.125rem;
       opacity: 0.9;
-      font-size: 0.95rem;
-    }
-
-    .login-content {
-      padding: 2.5rem 2rem;
-    }
-
-    h2 {
-      margin: 0 0 0.5rem;
-      color: #1a202c;
-      font-size: 1.75rem;
-    }
-
-    .subtitle {
-      margin: 0 0 2rem;
-      color: #718096;
-      font-size: 0.95rem;
-    }
-
-    .login-button {
-      width: 100%;
-      padding: 1rem 1.5rem;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-    }
-
-    .login-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
-    }
-
-    .login-button .icon {
-      width: 24px;
-      height: 24px;
+      margin-bottom: 3rem;
+      font-weight: 400;
     }
 
     .features {
-      margin-top: 2.5rem;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 1.5rem;
     }
 
     .feature {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      color: #4a5568;
-      font-size: 0.9rem;
+      gap: 1rem;
     }
 
-    .feature svg {
+    .feature-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .feature-icon svg {
       width: 20px;
       height: 20px;
-      color: #667eea;
+      color: white;
+    }
+
+    .feature span {
+      font-weight: 500;
+      font-size: 1rem;
+    }
+
+    .brand-footer {
+      font-size: 0.875rem;
+      opacity: 0.6;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Right Side: Form */
+    .form-section {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      background: white;
+    }
+
+    .form-wrapper {
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .form-header {
+      margin-bottom: 2.5rem;
+      text-align: center;
+    }
+
+    .form-header h2 {
+      font-size: 1.875rem;
+      color: #111827;
+      margin: 0 0 0.5rem;
+      font-weight: 700;
+    }
+
+    .form-header p {
+      color: #6b7280;
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    .login-button {
+      width: 100%;
+      background: #111827; /* Solid Black/Grey */
+      color: white;
+      border: 1px solid transparent;
+      padding: 0.875rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+
+    .login-button:hover {
+      background: #1f2937;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .button-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .keycloak-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .help-link {
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+
+    .help-link a {
+      color: #6b7280;
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .help-link a:hover {
+      color: #4f46e5;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .login-card {
+        flex-direction: column;
+        min-height: auto;
+      }
+
+      .brand-section {
+        padding: 2rem;
+      }
+
+      .form-section {
+        padding: 2rem;
+      }
     }
   `]
 })
 export class LoginComponent {
-    constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {
+    console.log('[LoginComponent] Component initialized');
+    console.log('[LoginComponent] AuthService injected:', this.authService);
+  }
 
-    login() {
-        this.authService.login();
+  login() {
+    console.log('[LoginComponent] Login button clicked!');
+    console.log('[LoginComponent] Calling authService.login()...');
+    try {
+      this.authService.login();
+      console.log('[LoginComponent] authService.login() called successfully');
+    } catch (error) {
+      console.error('[LoginComponent] Error calling login():', error);
     }
+  }
 }

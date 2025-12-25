@@ -22,6 +22,12 @@ import { AuthService, UserProfile } from './core/services/auth.service';
             </svg>
             <span>Home</span>
           </a>
+          <a routerLink="/plannr" routerLinkActive="active" class="nav-link">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span>Plannr</span>
+          </a>
 
           <a routerLink="/monitoring" routerLinkActive="active" class="nav-link" *ngIf="isViewer">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -249,19 +255,20 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.authService.isAuthenticated$.subscribe(isAuth => {
       this.isAuthenticated = isAuth;
-      if (!isAuth && !this.router.url.includes('/login')) {
-        this.router.navigate(['/login']);
-      }
+      console.log('Authentication status changed:', isAuth);
     });
 
     this.authService.userProfile$.subscribe(profile => {
       this.userProfile = profile;
+      if (profile) {
+        console.log('User profile loaded:', profile.name);
+        // Update roles when profile is loaded
+        this.isAdmin = this.authService.isAdmin();
+        this.isDeveloper = this.authService.isDeveloper();
+        this.isAnalyst = this.authService.isAnalyst();
+        this.isViewer = this.authService.isViewer();
+      }
     });
-
-    this.isAdmin = this.authService.isAdmin();
-    this.isDeveloper = this.authService.isDeveloper();
-    this.isAnalyst = this.authService.isAnalyst();
-    this.isViewer = this.authService.isViewer();
   }
 
   getUserRole(): string {

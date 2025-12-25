@@ -26,7 +26,18 @@ urlpatterns = [
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     
     # API Endpoints
+    # PLannr Routes (Specific match first)
+    path('api/v1/plannr/', include('apps.plannr.urls')),
+
+    # Other API Endpoints (Generic match last)
     path('api/v1/', include('apps.monitoring.urls')),
     path('api/v1/', include('apps.ml.urls')),
     path('api/v1/', include('apps.metrics.urls')),
 ]
+
+# Serve media files in development
+from django.conf import settings
+from django.conf.urls.static import static
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

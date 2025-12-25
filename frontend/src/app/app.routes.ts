@@ -32,7 +32,12 @@ export const routes: Routes = [
             {
                 path: 'admin',
                 loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent),
-                canActivate: [roleGuard('admin')]
+                canActivate: [roleGuard('admin')],
+            },
+            {
+                path: 'plannr',
+                loadComponent: () => import('./features/plannr/plannr.component').then(m => m.PlannrComponent),
+                canActivate: [authGuard]
             }
         ]
     },

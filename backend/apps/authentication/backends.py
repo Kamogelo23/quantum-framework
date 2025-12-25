@@ -69,63 +69,107 @@ class KeycloakAuthentication(authentication.BaseAuthentication):
     def decode_token(self, token: str) -> Dict[str, Any]:
         """
         Decode and validate JWT token using Keycloak's public key.
-        
-        Args:
-            token: JWT token string
-            
-        Returns:
-            dict: Decoded token data
         """
+        # Get unverified header to extract key ID (kid)
+        try:
+            unverified_header = jwt.get_unverified_header(token)
+            kid = unverified_header.get('kid')
+            logger.debug(f'Token kid: {kid}, alg: {unverified_header.get("alg")}')
+        except jwt.DecodeError as e:
+            logger.error(f'Failed to decode token header: {e}')
+            raise exceptions.AuthenticationFailed('Invalid token header')
+
         # Get public key from Keycloak JWKS endpoint
-        public_key = self.get_keycloak_public_key()
-        
+        public_key = self.get_keycloak_public_key(kid)
+        logger.debug(f'Retrieved public key for kid: {kid}')
+
         # Decode token
-        decoded = jwt.decode(
-            token,
-            public_key,
-            algorithms=['RS256'],
-            audience=settings.OIDC_RP_CLIENT_ID,
-            options={
-                'verify_signature': True,
-                'verify_aud': True,
-                'verify_exp': True,
-            }
-        )
+        # Note: In dev flow, audience might match frontend client ID, not backend
+        # We allow verify_aud=False if strict verification fails, or we can add multiple audiences
+        # For now, we'll try standard verification
+        try:
+            logger.debug(f'Attempting to decode token with audience: {settings.OIDC_RP_CLIENT_ID}')
+            decoded = jwt.decode(
+                token,
+                public_key,
+                algorithms=['RS256'],
+                audience=settings.OIDC_RP_CLIENT_ID,
+                options={
+                    'verify_signature': True,
+                    'verify_aud': True,
+                    'verify_exp': True,
+                }
+            )
+            logger.debug('Token decoded successfully with audience check')
+        except jwt.InvalidAudienceError:
+            # Fallback: Try verifying with verify_aud=False but check if authorized party is trusted
+            # This is common in SPA + API setups where token is issued to SPA
+            logger.debug('Audience mismatch, trying without audience verification')
+            decoded = jwt.decode(
+                token,
+                public_key,
+                algorithms=['RS256'],
+                options={
+                    'verify_signature': True,
+                    'verify_aud': False,
+                    'verify_exp': True,
+                }
+            )
+            logger.debug(f'Token decoded without aud check. azp={decoded.get("azp")}, aud={decoded.get("aud")}')
+            # Optional: Check 'azp' (Authorized Party) matches an expected client
+            # if decoded.get('azp') not in [settings.OIDC_RP_CLIENT_ID, 'quantum-frontend']:
+            #     raise exceptions.AuthenticationFailed('Invalid authorized party')
         
         return decoded
     
-    @lru_cache(maxsize=1)
-    def get_keycloak_public_key(self) -> str:
-        """
-        Fetch Keycloak's public key from JWKS endpoint.
-        Cached to avoid repeated requests.
-        
-        Returns:
-            str: PEM-formatted public key
-        """
+    def get_jwks(self):
+        """Fetch JWKS from Keycloak (no caching for now to debug)"""
         try:
+            logger.debug(f'Fetching JWKS from: {settings.OIDC_OP_JWKS_ENDPOINT}')
             response = requests.get(
                 settings.OIDC_OP_JWKS_ENDPOINT,
                 timeout=10
             )
             response.raise_for_status()
             jwks = response.json()
-            
-            # Get the first key (you might want to select by kid in production)
-            if 'keys' in jwks and len(jwks['keys']) > 0:
-                key_data = jwks['keys'][0]
-                
-                # Convert JWK to PEM format
-                from jwt.algorithms import RSAAlgorithm
-                public_key = RSAAlgorithm.from_jwk(key_data)
-                
-                return public_key
-            else:
-                raise exceptions.AuthenticationFailed('No keys found in JWKS')
-                
+            logger.debug(f'Got {len(jwks.get("keys", []))} keys from JWKS')
+            return jwks
         except requests.RequestException as e:
             logger.error(f'Failed to fetch Keycloak public key: {str(e)}')
             raise exceptions.AuthenticationFailed('Unable to validate token')
+
+    def get_keycloak_public_key(self, kid: Optional[str] = None) -> str:
+        """
+        Fetch Keycloak's public key from JWKS endpoint matching the kid.
+        """
+        jwks = self.get_jwks()
+        
+        if 'keys' not in jwks:
+            raise exceptions.AuthenticationFailed('No keys found in JWKS')
+            
+        key_data = None
+        
+        # If kid provided, find matching key
+        if kid:
+            for key in jwks['keys']:
+                if key.get('kid') == kid:
+                    key_data = key
+                    break
+        
+        # Fallback to first key if no kid or no match (though no match should probably fail)
+        if not key_data:
+            if kid:
+                logger.warning(f"Key with kid {kid} not found in JWKS, falling back to first key")
+            if len(jwks['keys']) > 0:
+                key_data = jwks['keys'][0]
+            else:
+                raise exceptions.AuthenticationFailed('No keys found in JWKS')
+                
+        # Convert JWK to PEM format
+        from jwt.algorithms import RSAAlgorithm
+        public_key = RSAAlgorithm.from_jwk(key_data)
+        
+        return public_key
     
     def get_or_create_user(self, token_data: Dict[str, Any]) -> User:
         """

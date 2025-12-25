@@ -1,0 +1,80 @@
+<div class="plannr-container">
+    <div class="header">
+        <h1>Resume Tailoring</h1>
+        <p>Optimize your resume for specific job requirements</p>
+    </div>
+
+    <div class="form-section">
+        <div class="input-grid">
+            <!-- Left: Job Description -->
+            <div class="job-column">
+                <label class="section-label">1. Job Description</label>
+
+                <textarea [(ngModel)]="jobText" placeholder="Paste job description text here..."
+                    [disabled]="loading || !!jobFile"></textarea>
+
+                <div class="divider-text">OR UPLOAD FILE</div>
+
+                <div class="file-upload-box">
+                    <input type="file" (change)="onJobFileChange($event)" accept=".pdf,.docx,.txt,.xlsx"
+                        [disabled]="loading || !!jobText">
+                    <div class="upload-placeholder" *ngIf="!jobFile">
+                        <div class="upload-icon">📄</div>
+                        <div class="upload-text">Upload Job Description</div>
+                        <div class="upload-hint">PDF, DOCX, TXT</div>
+                    </div>
+                    <div class="file-selected" *ngIf="jobFile">
+                        ✅ {{ jobFile.name }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Resume -->
+            <div class="resume-column">
+                <label class="section-label">2. Your Resume</label>
+                <div class="file-upload-box">
+                    <input type="file" (change)="onResumeFileChange($event)" accept=".pdf,.docx,.txt"
+                        [disabled]="loading">
+                    <div class="upload-placeholder" *ngIf="!resumeFile">
+                        <div class="upload-icon">📎</div>
+                        <div class="upload-text">Upload Resume</div>
+                        <div class="upload-hint">PDF, DOCX, TXT</div>
+                    </div>
+                    <div class="file-selected" *ngIf="resumeFile">
+                        ✅ {{ resumeFile.name }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button class="submit-btn" (click)="submit()" [disabled]="loading || (!jobText && !jobFile) || !resumeFile">
+            <span *ngIf="!loading">Generate Tailored Resume</span>
+            <span *ngIf="loading">Processing...</span>
+        </button>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-section" *ngIf="keywords.length > 0">
+        <h2>Extracted Keywords</h2>
+        <div class="keywords">
+            <span class="keyword" *ngFor="let kw of keywords">{{ kw }}</span>
+        </div>
+    </div>
+
+    <!-- Download Section -->
+    <div class="download-section" *ngIf="downloadUrl">
+        <h2>✅ Resume Ready</h2>
+        <a [href]="downloadUrl" download class="download-btn">
+            Download PDF Resume
+        </a>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" *ngIf="loading">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p class="loading-text">{{ loadingStep }}</p>
+        </div>
+    </div>
+</div>
